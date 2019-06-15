@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "Github Godoc",
+  "description": "Enhances Github UI for Go projects",
+  "version": "1.0",
+  "permissions": [
+    "*://*.godoc.org/*c"
+  ],
+  "background": {
+    "scripts": [
+	    "background.js"
+    ],
+    "persistent": false
+  },
+  "web_accessible_resources": [
+	  "images/popup.svg"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+	      "https://github.com/*"
+      ],
+      "js": [
+	      "content.js"
+      ]
+    }
+  ]
+}
