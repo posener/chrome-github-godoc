@@ -1,31 +1,13 @@
 
-function main() {
-	const view =  viewFromURL(document.location.href);
-	if (view == undefined) {
-		console.log("Invalid URL:", document.location.href);
-		return;
-	}
-
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+	var view = request.view;
+	var results = request.results;
 	console.log("starting for view: ", view);
-	var port = chrome.runtime.connect({name: "fetch"});
+	const lookup = mapResults(results);
 
-	// Register a listener to to process results returned from background script.
-	port.onMessage.addListener(function(results) {
-		if (results == undefined) {
-			console.log('No data for current path');
-			return;
-		}
-		console.log("got data: ", results);
-		const lookup = mapResults(results);
-
-		updateHeader(view, lookup)
-		updateFilesList(view, lookup)
-
-	});
-
-	// Send a message to background script to process the current pkg.
-	port.postMessage(view);
-}
+	updateHeader(view, lookup)
+	updateFilesList(view, lookup)
+})
 
 function updateHeader(view, lookup) {
 	const entry = lookup[view.package]
@@ -136,5 +118,3 @@ function isDirectoryRow(row) {
 	var tp = row.getElementsByClassName("icon")[0].getElementsByTagName("svg")[0].getAttribute("aria-label");
 	return tp === "directory";
 }
-
-main();
