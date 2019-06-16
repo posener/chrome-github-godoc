@@ -36,7 +36,7 @@ function main() {
 			var synopsis = synopsisOf(entry)
 			console.log("Replacing", pkg, ":", synopsisBox.innerHTML, '->', synopsis);
 			synopsisBox.innerHTML = synopsis;
-			message.append(godocLink(entry));
+			message.prepend(godocLink(entry));
 		});
 	});
 }
@@ -83,7 +83,7 @@ function godocLink(entry) {
 	a.setAttribute("href", "https://godoc.org/" + entry.path);
 	a.setAttribute("target", "_blank");
 	img = document.createElement("img");
-	img.setAttribute("src", chrome.runtime.getURL("images/popup.svg"));
+	img.setAttribute("src", chrome.runtime.getURL("images/gopher.png"));
 	img.setAttribute("height", "16")
 	img.setAttribute("width", "16")
 	a.appendChild(img);
