@@ -1,14 +1,15 @@
 
 function main() {
-	const project =  projectFromURL(document.location.href)
+	const project =  projectFromURL(document.location.href);
 	if (project == undefined) {
-		console.log("Invalid URL:", document.location.href)
+		console.log("Invalid URL:", document.location.href);
 		return;
 	}
 
 	console.log("starting for project: ", project);
 	var port = chrome.runtime.connect({name: "fetch"});
-	port.postMessage({project: project})
+
+	// Register a listener to to process results returned from background script.
 	port.onMessage.addListener(function(results) {
 		console.log("got data: ", results);
 		const lookup = mapResults(results);
@@ -23,9 +24,9 @@ function main() {
 			var message = row.getElementsByClassName("message")[0];
 			var synopsisBox = message.getElementsByTagName("a")[0];
 
-			var subPackage = subPackageFromPath(name.getAttribute("href"))
+			var subPackage = subPackageFromPath(name.getAttribute("href"));
 			if (subPackage === undefined) {
-				log.console("skipping regex mismatched:", name)
+				log.console("skipping regex mismatched:", name);
 				return;
 			}
 			var pkg = project + "/" + subPackage;
@@ -33,12 +34,15 @@ function main() {
 			if (entry === undefined) {
 				return;
 			}
-			var synopsis = synopsisOf(entry)
+			var synopsis = synopsisOf(entry);
 			console.log("Replacing", pkg, ":", synopsisBox.innerHTML, '->', synopsis);
 			synopsisBox.innerHTML = synopsis;
 			message.prepend(godocLink(entry));
 		});
 	});
+
+	// Send a message to background script to process the current project.
+	port.postMessage({project: project});
 }
 
 const reProject = new RegExp('^https\:\/\/(github\.com\/[^/]+\/[^/]+)');
@@ -54,7 +58,7 @@ function projectFromURL(url) {
 const rePath = new RegExp('^\/[^/]+\/[^/]+\/tree\/[^/]+\/(.*)');
 
 function subPackageFromPath(path) {
-	var matches = rePath.exec(path)
+	var matches = rePath.exec(path);
 	if (matches === undefined || matches.length < 2) {
 		return;
 	}
@@ -73,8 +77,8 @@ function synopsisOf(entry) {
 	if (entry === undefined) {
 		return '';
 	}
-	var re = new RegExp('Package '+entry.name+' ')
-	var synopsis = entry.synopsis.replace(re, '')
+	var re = new RegExp('Package '+entry.name+' ');
+	var synopsis = entry.synopsis.replace(re, '');
 	return synopsis.charAt(0).toUpperCase() + synopsis.slice(1);
 }
 
