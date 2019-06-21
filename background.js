@@ -17,6 +17,10 @@ function updateGoDoc(tab) {
 				return;
 			}
 			response.json().then(function(data) {
+				if (data == undefined) {
+					console.log("No data for:", view.package);
+					return;
+				}
 				console.log("Got response:", data);
 				chrome.tabs.sendMessage(tab.id, {view: view, results: data.results});
 			});
